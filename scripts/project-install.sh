@@ -35,7 +35,7 @@ Install Agent OS into the current project directory.
 
 Options:
     --profile <name>     Use specified profile (default: from config.yml)
-    --commands-only      Only update commands, preserve existing standards
+    --commands-only      Only update prompts, preserve existing standards
     --verbose            Show detailed output
     -h, --help           Show this help message
 
@@ -180,7 +180,7 @@ confirm_standards_overwrite() {
             echo ""
             echo "Installation cancelled."
             echo ""
-            echo "To update only commands without touching standards, use:"
+            echo "To update only prompts without touching standards, use:"
             echo "  $0 --commands-only"
             echo ""
             exit 0
@@ -381,32 +381,32 @@ create_index() {
     fi
 }
 
-install_commands() {
+install_prompts() {
     echo ""
-    print_status "Installing commands..."
+    print_status "Installing prompts..."
 
-    local commands_source="$BASE_DIR/commands/agent-os"
-    local commands_dest="$PROJECT_DIR/.claude/commands/agent-os"
+    local prompts_source="$BASE_DIR/prompts/agent-os"
+    local prompts_dest="$PROJECT_DIR/.github/prompts"
 
-    if [[ ! -d "$commands_source" ]]; then
-        print_warning "No commands found in base installation"
+    if [[ ! -d "$prompts_source" ]]; then
+        print_warning "No prompts found in base installation"
         return
     fi
 
-    ensure_dir "$commands_dest"
+    ensure_dir "$prompts_dest"
 
     local count=0
-    for file in "$commands_source"/*.md; do
+    for file in "$prompts_source"/*.md; do
         if [[ -f "$file" ]]; then
-            cp "$file" "$commands_dest/"
+            cp "$file" "$prompts_dest/"
             ((count++))
         fi
     done
 
     if [[ "$count" -gt 0 ]]; then
-        print_success "Installed $count commands to .claude/commands/agent-os/"
+        print_success "Installed $count prompts to .github/prompts/"
     else
-        print_warning "No command files found"
+        print_warning "No prompt files found"
     fi
 }
 
@@ -451,7 +451,7 @@ main() {
     done <<< "$reversed_chain"
     echo "$chain_display"
 
-    echo "  Commands only: $COMMANDS_ONLY"
+    echo "  Prompts only: $COMMANDS_ONLY"
 
     # Confirm overwrite if standards folder exists
     confirm_standards_overwrite
@@ -462,7 +462,7 @@ main() {
     create_project_structure
     install_standards
     create_index
-    install_commands
+    install_prompts
 
     echo ""
     print_success "Agent OS installed successfully!"
